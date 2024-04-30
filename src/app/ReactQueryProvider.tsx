@@ -15,18 +15,22 @@ export default function ReactQueryProvider({
 }: {
   children: React.ReactNode;
 }) {
-  const [queryClient] = useState(
-    () =>
-      new QueryClient({
-        defaultOptions: {
-          queries: {
-            staleTime: 60 * 1000
-          }
+  const [client] = useState(
+    new QueryClient({
+      defaultOptions: {
+        // react-query 전역 설정
+        queries: {
+          staleTime: 60 * 1000,
+          refetchOnWindowFocus: false,
+          retryOnMount: true,
+          refetchOnReconnect: false,
+          retry: false
         }
-      })
+      }
+    })
   );
   return (
-    <QueryClientProvider client={queryClient}>
+    <QueryClientProvider client={client}>
       <ReactQueryStreamedHydration>{children}</ReactQueryStreamedHydration>
     </QueryClientProvider>
   );

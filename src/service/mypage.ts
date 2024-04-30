@@ -119,12 +119,12 @@ const mypageApi = {
   },
   GetTripReviewDetail: function (data: number) {
     return useQuery({
-      queryKey: ['tripReviewDetail'],
+      queryKey: ['tripReviewDetail', data],
       queryFn: () => this.getTripReviewDetailFn(data),
-      enabled: !!data,
-      refetchOnWindowFocus: false,
+      enabled: !data,
       staleTime: 50000,
-      retry: 1
+      gcTime: 0,
+      retry: false
     });
   }
 };

@@ -17,7 +17,6 @@ const tripApi = {
     return useQuery({
       queryKey: ['trip', data],
       queryFn: () => this.getTripFn(data),
-      refetchOnWindowFocus: false,
       staleTime: 50000
     });
   },
@@ -31,29 +30,39 @@ const tripApi = {
       queryKey: ['tripDetail'],
       queryFn: () => this.getTripDetailFn(data),
       enabled: !!data,
-      refetchOnWindowFocus: false,
-      staleTime: 50000,
-      retry: 1
+      staleTime: 50000
     });
   },
   // 상품 상세보기
-  getProductDetailFn: async (data: {
+  getProductDetailFn: async (data?: number): Promise<getTripDetailRs> => {
+    const res = await axiosInstance.get(`/api/main/business_item?cnum=${data}`);
+    return res.data.body;
+  },
+  GetProductDetail: function (data?: number) {
+    return useQuery({
+      queryKey: ['productDetail', data],
+      queryFn: () => this.getProductDetailFn(data),
+      enabled: false,
+      // staleTime: 50000,
+      retry: false
+    });
+  },
+  // 상품 아이템 상세보기
+  getProductItemFn: async (data: {
     pk: number;
     category: string;
   }): Promise<getTripDetailRs> => {
     const res = await axiosInstance.get(
-      `/api/main/item_infomation?rnum=${data.pk}&category=${data.category}`
+      `/api/main/item_infomation?itemNumber=${data.pk}`
     );
     return res.data.body;
   },
-  GetProductDetail: function (data: { pk: number; category: string }) {
+  GetProductItem: function (data: { pk: number; category: string }) {
     return useQuery({
-      queryKey: ['productDetail', data.pk, data.category],
-      queryFn: () => this.getProductDetailFn(data),
-      enabled: !!data.category && !!data.pk,
-      refetchOnWindowFocus: false
+      queryKey: ['productItem', data.pk, data.category],
+      queryFn: () => this.getProductItemFn(data),
+      enabled: !!data.category && !!data.pk
       // staleTime: 50000,
-      // retry: 1
     });
   },
   // 여행 코스 조회
@@ -65,8 +74,7 @@ const tripApi = {
     return useQuery({
       queryKey: ['travelCourse', data],
       queryFn: () => this.getTravelCourseFn(data),
-      enabled: !!data,
-      refetchOnWindowFocus: false
+      enabled: !!data
     });
   }
 };
